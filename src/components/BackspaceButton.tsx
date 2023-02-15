@@ -17,9 +17,9 @@ const BackspaceButton = (props: Props) => {
     onClick={handleClick}
     variant="danger"
     size="lg" 
-    className="fs-1 px-4 py-3"
+    className="fs-2 px-4 py-3 flex-fill"
     disabled={gameState !== GameStatus.active ? true : false}
-    >Backspace</Button>
+    ><i className="bi bi-backspace"></i> Backspace</Button>
   )
 }
 

@@ -15,10 +15,10 @@ const Keyboard = (props: Props) => {
 
 	return (
 		<>
-			<div data-testid="keyboard" className="d-flex flex-wrap justify-content-center align-items-center gap-3">
+			<div data-testid="keyboard" className="d-flex font-monospace flex-wrap justify-content-center align-items-center gap-3">
 				{KeyButtons}
 			</div>
-            <div data-testid="keyboard" className="d-flex flex-wrap justify-content-center align-items-center gap-3 mt-3">
+            <div data-testid="keyboard" className="d-flex font-monospace flex-wrap justify-content-between align-items-center gap-3 my-3">
 				<BackspaceButton></BackspaceButton>
                 <EnterButton></EnterButton>
 			</div>

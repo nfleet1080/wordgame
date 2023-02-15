@@ -1,7 +1,7 @@
 import { Row } from 'react-bootstrap';
 import LetterDisplay from './LetterDisplay';
 import { useAppSelector } from '../hooks';
-import { useEffect } from 'react';
+// import { useEffect } from 'react';
 
 
 type Props = {
@@ -9,15 +9,15 @@ type Props = {
 };
 
 const WordInput = ({ rowIndex }: Props) => {
-	const activeRowIndex = useAppSelector((state) => state.game.currentGuessIndex);
+	// const activeRowIndex = useAppSelector((state) => state.game.currentGuessIndex);
 	const guess = useAppSelector((state) =>state.game.guesses);
 	const wordLength = guess[rowIndex].letters.length;
 	// console.info('rowindex', rowIndex, 'rowval', rowVal);
 
-	useEffect(() => {
-		if(activeRowIndex === rowIndex)		
-			console.table(guess[rowIndex].letters)
-	}, [guess,activeRowIndex,rowIndex]);
+	// useEffect(() => {
+	// 	if(activeRowIndex === rowIndex)		
+	// 		console.table(guess[rowIndex].letters)
+	// }, [guess,activeRowIndex,rowIndex]);
 
 	// let LetterInputs = [];
 	// for (let index = 0; index < wordLength; index++) {

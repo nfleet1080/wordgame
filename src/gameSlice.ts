@@ -1,40 +1,36 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
-export const fetchValidWords = createAsyncThunk(
-    'validWords', 
-    async(word, {rejectWithValue}) => {
-    const response = await fetch('../validWordList.txt');
-    const data = response.text();
-    if (response.status < 200 || response.status >= 300) {
-        return rejectWithValue(data)
-      }
-    return data;
+export const fetchValidWords = createAsyncThunk('validWords', async (word, { rejectWithValue }) => {
+	const response = await fetch('../validWordList.txt');
+	const data = response.text();
+	if (response.status < 200 || response.status >= 300) {
+		return rejectWithValue(data);
+	}
+	return data;
 });
 
-export const fetchWinningWords = createAsyncThunk(
-    'winningWords', 
-    async(word, {rejectWithValue}) => {
-    const response = await fetch('../winningWordList.txt');
-    const data = response.text();
-    if (response.status < 200 || response.status >= 300) {
-        return rejectWithValue(data)
-      }
-    return data;
+export const fetchWinningWords = createAsyncThunk('winningWords', async (word, { rejectWithValue }) => {
+	const response = await fetch('../winningWordList.txt');
+	const data = response.text();
+	if (response.status < 200 || response.status >= 300) {
+		return rejectWithValue(data);
+	}
+	return data;
 });
 
 export enum GameStatus {
-    loading,
-    error,
+	loading,
+	error,
 	active,
 	win,
 	lose,
 }
 
 export enum wordListStatus {
-    loading,
-    error,
-    ready
+	loading,
+	error,
+	ready,
 }
 
 export enum GuessStatuses {
@@ -66,21 +62,24 @@ export interface WordState {
 }
 
 export interface GuessStatus {
-    status: GuessStatuses;
-    reason: GuessReasons;
+	status: GuessStatuses;
+	reason: GuessReasons;
 }
 
 export interface GameState {
+	wins: number;
+	losses: number;
 	gameStatus: GameStatus;
-    noOfGuesses: number;
+	noOfGuesses: number;
 	validWords: string[]; // words to check for valid guesses
-    validWordsStatus: wordListStatus;
+	validWordsStatus: wordListStatus;
 	winningWords: string[]; // list of possible winning words (from teacher/file)
-    winningWordsStatus: wordListStatus;
-    winningWordsIndex: number; // what word we're on
+	winningWordsStatus: wordListStatus;
+	winningWordsIndex: number; // what word we're on
 	wordToGuess: string; // current word to guess, random from winning words (filtering out previous game words)
 	wordLength: number;
-    answerLetterFrequency: any;
+	answerLetterFrequency: any;
+	tempFrequency: any;
 	previousGameWords: string[]; // for concurrent games to prevent duplicate rounds
 	guesses: WordState[]; // list of guessed words in current game
 	currentGuessWord: WordState; // current guess attempt
@@ -91,79 +90,84 @@ export interface GameState {
 }
 
 const initialState: GameState = {
+	wins: 0,
+	losses: 0,
 	gameStatus: GameStatus.loading,
-    noOfGuesses: 6,
+	noOfGuesses: 6,
 	validWords: [],
-    validWordsStatus: wordListStatus.loading,
+	validWordsStatus: wordListStatus.loading,
 	winningWords: [],
-    winningWordsStatus: wordListStatus.loading,
-    winningWordsIndex: -1,
+	winningWordsStatus: wordListStatus.loading,
+	winningWordsIndex: -1,
 	wordToGuess: '',
 	wordLength: 5,
-    answerLetterFrequency: null,
+	answerLetterFrequency: null,
+	tempFrequency: null,
 	previousGameWords: [],
-	guesses: [{
-		letters:[
-			{ letter: '', state: LetterStates.open },
-			{ letter: '', state: LetterStates.open },
-			{ letter: '', state: LetterStates.open },
-			{ letter: '', state: LetterStates.open },
-			{ letter: '', state: LetterStates.open },
-		]
-	},
-	{
-		letters:[
-			{ letter: '', state: LetterStates.open },
-			{ letter: '', state: LetterStates.open },
-			{ letter: '', state: LetterStates.open },
-			{ letter: '', state: LetterStates.open },
-			{ letter: '', state: LetterStates.open },
-		]
-	},
-	{
-		letters:[
-			{ letter: '', state: LetterStates.open },
-			{ letter: '', state: LetterStates.open },
-			{ letter: '', state: LetterStates.open },
-			{ letter: '', state: LetterStates.open },
-			{ letter: '', state: LetterStates.open },
-		]
-	},
-	{
-		letters:[
-			{ letter: '', state: LetterStates.open },
-			{ letter: '', state: LetterStates.open },
-			{ letter: '', state: LetterStates.open },
-			{ letter: '', state: LetterStates.open },
-			{ letter: '', state: LetterStates.open },
-		]
-	},
-	{
-		letters:[
-			{ letter: '', state: LetterStates.open },
-			{ letter: '', state: LetterStates.open },
-			{ letter: '', state: LetterStates.open },
-			{ letter: '', state: LetterStates.open },
-			{ letter: '', state: LetterStates.open },
-		]
-	},
-	{
-		letters:[
-			{ letter: '', state: LetterStates.open },
-			{ letter: '', state: LetterStates.open },
-			{ letter: '', state: LetterStates.open },
-			{ letter: '', state: LetterStates.open },
-			{ letter: '', state: LetterStates.open },
-		]
-	},],
+	guesses: [
+		{
+			letters: [
+				{ letter: '', state: LetterStates.open },
+				{ letter: '', state: LetterStates.open },
+				{ letter: '', state: LetterStates.open },
+				{ letter: '', state: LetterStates.open },
+				{ letter: '', state: LetterStates.open },
+			],
+		},
+		{
+			letters: [
+				{ letter: '', state: LetterStates.open },
+				{ letter: '', state: LetterStates.open },
+				{ letter: '', state: LetterStates.open },
+				{ letter: '', state: LetterStates.open },
+				{ letter: '', state: LetterStates.open },
+			],
+		},
+		{
+			letters: [
+				{ letter: '', state: LetterStates.open },
+				{ letter: '', state: LetterStates.open },
+				{ letter: '', state: LetterStates.open },
+				{ letter: '', state: LetterStates.open },
+				{ letter: '', state: LetterStates.open },
+			],
+		},
+		{
+			letters: [
+				{ letter: '', state: LetterStates.open },
+				{ letter: '', state: LetterStates.open },
+				{ letter: '', state: LetterStates.open },
+				{ letter: '', state: LetterStates.open },
+				{ letter: '', state: LetterStates.open },
+			],
+		},
+		{
+			letters: [
+				{ letter: '', state: LetterStates.open },
+				{ letter: '', state: LetterStates.open },
+				{ letter: '', state: LetterStates.open },
+				{ letter: '', state: LetterStates.open },
+				{ letter: '', state: LetterStates.open },
+			],
+		},
+		{
+			letters: [
+				{ letter: '', state: LetterStates.open },
+				{ letter: '', state: LetterStates.open },
+				{ letter: '', state: LetterStates.open },
+				{ letter: '', state: LetterStates.open },
+				{ letter: '', state: LetterStates.open },
+			],
+		},
+	],
 	currentGuessWord: {
-		letters:[
+		letters: [
 			{ letter: '', state: LetterStates.open },
 			{ letter: '', state: LetterStates.open },
 			{ letter: '', state: LetterStates.open },
 			{ letter: '', state: LetterStates.open },
 			{ letter: '', state: LetterStates.open },
-		]
+		],
 	},
 	currentGuessIndex: 0,
 	currentGuessLetterIndex: 0,
@@ -202,73 +206,117 @@ const gameSlice = createSlice({
 	name: 'wordGame',
 	initialState,
 	reducers: {
-        newGame: (state) => {
-            state.winningWordsIndex += 1;
-            if(state.winningWordsIndex > state.winningWords.length) state.winningWordsIndex = 0;
-            state.wordToGuess = state.winningWords[state.winningWordsIndex];
+		newGame: (state) => {
+			console.log('start new game', state.winningWords.length);
+
+			// increment wins/losses
+			if (state.gameStatus === GameStatus.win) state.wins++;
+			if (state.gameStatus === GameStatus.lose) state.losses++;
+			state.gameStatus = GameStatus.loading;
+
+			// reset some values to the defaults
+			state.alphabet = initialState.alphabet;
+			state.guesses = initialState.guesses;
+			state.currentGuessIndex = initialState.currentGuessIndex;
+			state.currentGuessLetterIndex = initialState.currentGuessLetterIndex;
+
+			// grab the next word to guess
+			state.winningWordsIndex += 1;
+			if (state.winningWordsIndex === state.winningWords.length) state.winningWordsIndex = 0;
+			state.wordToGuess = state.winningWords[state.winningWordsIndex];
 			state.wordLength = state.wordToGuess.length;
-        },
+
+			const freq = [...state.wordToGuess.toUpperCase()].reduce((total: any, letter) => {
+				total[letter] ? total[letter]++ : (total[letter] = 1);
+				return total;
+			}, {});
+			state.answerLetterFrequency = freq;
+			state.tempFrequency = freq;
+			state.gameStatus = GameStatus.active;
+		},
 		guessLetter: (state, action: PayloadAction<string>) => {
-            if (state.currentGuessLetterIndex > state.wordLength) return;
-			
+			if (state.currentGuessLetterIndex > state.wordLength) return;
+
 			state.guesses[state.currentGuessIndex].letters[state.currentGuessLetterIndex].letter = action.payload;
 			state.guesses[state.currentGuessIndex].letters[state.currentGuessLetterIndex].state = LetterStates.open;
 			state.currentGuessLetterIndex += 1;
-                // state.currentGuessWord.letters.push({ letter: action.payload, state: LetterStates.open });
+
+			state.currentGuessStatus = initialState.currentGuessStatus;
+		},
+		updateLetterState: (state, action: PayloadAction<{ index: number; state: LetterStates }>) => {
+			const letterData = state.guesses[state.currentGuessIndex].letters[action.payload.index];
+			letterData.state = action.payload.state;
+			const alphIndex = state.alphabet.findIndex((letter) => letter.letter === letterData.letter);
+			if (state.alphabet[alphIndex].state !== LetterStates.correct) {
+				state.alphabet[alphIndex].state = action.payload.state;
+			}
+		},
+		reduceLetterFrequency: (state, action: PayloadAction<string>) => {
+			if (state.answerLetterFrequency[action.payload]) {
+				state.answerLetterFrequency[action.payload] -= 1;
+			}
+			setTempFrequency();
+		},
+		setTempFrequency: (state) => {
+			state.tempFrequency = { ...state.answerLetterFrequency };
+		},
+		reduceTempFrequency: (state, action: PayloadAction<string>) => {
+			if (state.tempFrequency[action.payload]) {
+				state.tempFrequency[action.payload] -= 1;
+			}
 		},
 		backspace: (state) => {
-			if(state.currentGuessLetterIndex === 0) return;
+			if (state.currentGuessLetterIndex === 0) return;
 			state.currentGuessLetterIndex -= 1;
 			state.guesses[state.currentGuessIndex].letters[state.currentGuessLetterIndex].letter = '';
+			state.currentGuessStatus = initialState.currentGuessStatus;
 		},
-        updateGuessStatus: (state, action:PayloadAction<GuessStatus>) => {
-            state.currentGuessStatus = action.payload;
-        },
-        updateGameState: (state, action:PayloadAction<GameStatus>) => {
-            state.gameStatus = action.payload;
-        },
-		nextWord: (state, action: PayloadAction<WordState>) => {
-            // state.guesses[state.currentGuessIndex] = action.payload;
+		updateGuessStatus: (state, action: PayloadAction<GuessStatus>) => {
+			state.currentGuessStatus = action.payload;
+		},
+		updateGameState: (state, action: PayloadAction<GameStatus>) => {
+			state.gameStatus = action.payload;
+		},
+		nextWord: (state) => {
 			state.currentGuessIndex += 1;
 			state.currentGuessLetterIndex = 0;
-        },
-		resetGuessStatus: (state) => {
-			state.currentGuessWord = initialState.currentGuessWord;
 		},
 	},
-    extraReducers: (builder)=>{
-        builder.addCase(fetchValidWords.pending, (state, action) => {
-            state.validWordsStatus = wordListStatus.loading;
-            state.gameStatus = GameStatus.loading;
-        })
-        builder.addCase(fetchValidWords.fulfilled, (state, action) => {
-            const wordArray = action.payload.split(/\r?\n/);
-            state.validWords = wordArray;
-            state.validWordsStatus = wordListStatus.ready;
-            if(state.winningWordsStatus === wordListStatus.ready) state.gameStatus = GameStatus.active;
-        })
-        builder.addCase(fetchValidWords.rejected, (state, action) => {
-            state.validWordsStatus = wordListStatus.error;
-            state.gameStatus = GameStatus.error;
-        })
+	extraReducers: (builder) => {
+		builder.addCase(fetchValidWords.pending, (state, action) => {
+			state.validWordsStatus = wordListStatus.loading;
+			state.gameStatus = GameStatus.loading;
+		});
+		builder.addCase(fetchValidWords.fulfilled, (state, action) => {
+			console.log('got word list');
+			const wordArray = action.payload.split(/\r?\n/);
+			state.validWords = wordArray;
+			state.validWordsStatus = wordListStatus.ready;
+			if (state.winningWordsStatus === wordListStatus.ready) state.gameStatus = GameStatus.active;
+		});
+		builder.addCase(fetchValidWords.rejected, (state, action) => {
+			state.validWordsStatus = wordListStatus.error;
+			state.gameStatus = GameStatus.error;
+		});
 
-        builder.addCase(fetchWinningWords.pending, (state, action) => {
-            state.winningWordsStatus = wordListStatus.loading;
-            state.gameStatus = GameStatus.loading;
-        })
-        builder.addCase(fetchWinningWords.fulfilled, (state, action) => {
-            const wordArray = action.payload.split(/\r?\n/);
-            state.winningWords = wordArray;
-            state.winningWordsStatus = wordListStatus.ready;
-            if(state.validWordsStatus === wordListStatus.ready) state.gameStatus = GameStatus.active;
-        })
-        builder.addCase(fetchWinningWords.rejected, (state, action) => {
-            state.winningWordsStatus = wordListStatus.error;
-            state.gameStatus = GameStatus.error;
-        })
-    }
+		builder.addCase(fetchWinningWords.pending, (state, action) => {
+			state.winningWordsStatus = wordListStatus.loading;
+			state.gameStatus = GameStatus.loading;
+		});
+		builder.addCase(fetchWinningWords.fulfilled, (state, action) => {
+			console.log('got answer key');
+			const wordArray = action.payload.split(/\r?\n/);
+			state.winningWords = wordArray;
+			state.winningWordsStatus = wordListStatus.ready;
+			if (state.validWordsStatus === wordListStatus.ready) state.gameStatus = GameStatus.active;
+		});
+		builder.addCase(fetchWinningWords.rejected, (state, action) => {
+			state.winningWordsStatus = wordListStatus.error;
+			state.gameStatus = GameStatus.error;
+		});
+	},
 });
 
-export const { newGame, nextWord, guessLetter, backspace,  updateGuessStatus, updateGameState, resetGuessStatus} = gameSlice.actions;
+export const { newGame, nextWord, guessLetter, updateLetterState, reduceLetterFrequency, setTempFrequency, reduceTempFrequency, backspace, updateGuessStatus, updateGameState } = gameSlice.actions;
 
 export default gameSlice;

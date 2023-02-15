@@ -26,7 +26,7 @@ const KeyButton = ({letter}: Props) => {
     }
   return (
     <Button size="lg" 
-    style={{width:'90px'}}
+    // style={{width:'90px'}}
     onClick={handleClick} 
     variant={variant} 
     className="fs-1 px-4 py-3"
