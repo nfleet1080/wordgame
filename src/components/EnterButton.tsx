@@ -17,7 +17,7 @@ const EnterButton = (props: Props) => {
 	const guesses = useAppSelector((state) => state.game.guesses);
 	const currentGuess = guesses[currentGuessIndex];
 	const letterFrequency = useAppSelector((state) => state.game.answerLetterFrequency);
-	const tempGuess = currentGuess;
+	const newStates:LetterStates[] = [];
 	const gameState = useAppSelector((state) => state.game.gameStatus);
 	const validWords = useAppSelector((state) => state.game.validWords);
 	const guessLength = useAppSelector((state) => state.game.currentGuessLetterIndex);
@@ -40,20 +40,21 @@ const EnterButton = (props: Props) => {
 		let gameStatus = GameStatus.win;
 
 		// parse each letter
-		tempGuess.letters.forEach((currentLetter: LetterState, index) => {
+		currentGuess.letters.forEach((currentLetter: LetterState, index) => {
 			if (currentLetter.letter.toLowerCase() === winningWord.charAt(index)) {
 				// direct match?
 				//state = LetterStates.correct;
 				//dispatch(reduceLetterFrequency(currentLetter.letter));
 				tempFrequency[currentLetter.letter] -= 1;
-				currentLetter.state = LetterStates.correct;
+				newStates[index] = LetterStates.correct;
 			} else {
 				gameStatus = GameStatus.active;
 			}
 			index++;
 		});
 
-		tempGuess.letters.forEach((currentLetter: LetterState, index) => {
+		currentGuess.letters.forEach((currentLetter: LetterState, index) => {
+			if(newStates[index] != LetterStates.correct){
 			let state = LetterStates.open;
 			// does the letter exist in the guess?
 			if (tempFrequency[currentLetter.letter] > 0) {
@@ -66,13 +67,14 @@ const EnterButton = (props: Props) => {
 				// if not, we are incorrect
 				state = LetterStates.incorrect;
 			}
-			currentLetter.state = state;
+			newStates[index] = state;
 			//dispatch(updateLetterState({ index, state }));
+		}
 			index++;
 		});
 
-		tempGuess.letters.forEach((currentLetter: LetterState, index) => {
-			const state = currentLetter.state;
+		currentGuess.letters.forEach((currentLetter: LetterState, index) => {
+			const state = newStates[index];
 			dispatch(updateLetterState({ index, state }));
 			// TODO: delay for transition animation
 
