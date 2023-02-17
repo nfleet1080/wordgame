@@ -10,6 +10,10 @@ const guessToWord = (guess: WordState) => {
 	return letters.join('');
 };
 
+function sleep(ms: number) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 const EnterButton = (props: Props) => {
 	const dispatch = useAppDispatch();
 	const winningWord = useAppSelector((state) => state.game.wordToGuess);
@@ -17,7 +21,7 @@ const EnterButton = (props: Props) => {
 	const guesses = useAppSelector((state) => state.game.guesses);
 	const currentGuess = guesses[currentGuessIndex];
 	const letterFrequency = useAppSelector((state) => state.game.answerLetterFrequency);
-	const newStates:LetterStates[] = [];
+	const newStates: LetterStates[] = [];
 	const gameState = useAppSelector((state) => state.game.gameStatus);
 	const validWords = useAppSelector((state) => state.game.validWords);
 	const guessLength = useAppSelector((state) => state.game.currentGuessLetterIndex);
@@ -50,34 +54,33 @@ const EnterButton = (props: Props) => {
 			} else {
 				gameStatus = GameStatus.active;
 			}
-			index++;
 		});
 
 		currentGuess.letters.forEach((currentLetter: LetterState, index) => {
-			if(newStates[index] != LetterStates.correct){
-			let state = LetterStates.open;
-			// does the letter exist in the guess?
-			if (tempFrequency[currentLetter.letter] > 0) {
-				// TODO: check if this happened already in the word
-				// if so make sure we have frequency available before marking wrong position
-				state = LetterStates.wrongPosition;
-				tempFrequency[currentLetter.letter] -= 1;
-				// dispatch(reduceTempFrequency(currentLetter.letter));
-			} else {
-				// if not, we are incorrect
-				state = LetterStates.incorrect;
+			if (newStates[index] != LetterStates.correct) {
+				let state = LetterStates.open;
+				// does the letter exist in the guess?
+				if (tempFrequency[currentLetter.letter] > 0) {
+					// TODO: check if this happened already in the word
+					// if so make sure we have frequency available before marking wrong position
+					state = LetterStates.wrongPosition;
+					tempFrequency[currentLetter.letter] -= 1;
+					// dispatch(reduceTempFrequency(currentLetter.letter));
+				} else {
+					// if not, we are incorrect
+					state = LetterStates.incorrect;
+				}
+				newStates[index] = state;
+				//dispatch(updateLetterState({ index, state }));
 			}
-			newStates[index] = state;
-			//dispatch(updateLetterState({ index, state }));
-		}
-			index++;
 		});
 
-		currentGuess.letters.forEach((currentLetter: LetterState, index) => {
-			const state = newStates[index];
-			dispatch(updateLetterState({ index, state }));
-			// TODO: delay for transition animation
-
+		currentGuess.letters.forEach(async (currentLetter: LetterState, index) => {
+			//await sleep(2000);
+			setTimeout(() => {
+				const state = newStates[index];
+				dispatch(updateLetterState({ index, state }));
+			}, 2000)
 		});
 
 		if (gameStatus === GameStatus.win) {
