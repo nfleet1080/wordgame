@@ -17,14 +17,14 @@ const EnterButton = (props: Props) => {
 	const guesses = useAppSelector((state) => state.game.guesses);
 	const currentGuess = guesses[currentGuessIndex];
 	const letterFrequency = useAppSelector((state) => state.game.answerLetterFrequency);
-	// const tempFrequency = useAppSelector((state) => state.game.tempFrequency);
+	const tempGuess = currentGuess;
 	const gameState = useAppSelector((state) => state.game.gameStatus);
 	const validWords = useAppSelector((state) => state.game.validWords);
-    const guessLength = useAppSelector((state) => state.game.currentGuessLetterIndex);
+	const guessLength = useAppSelector((state) => state.game.currentGuessLetterIndex);
 
-	const submitGuess = () => {		
+	const submitGuess = () => {
 		dispatch(updateGuessStatus({ status: GuessStatuses.waiting, reason: GuessReasons.ok }));
-		const tempFrequency = {...letterFrequency};
+		const tempFrequency = { ...letterFrequency };
 		// dispatch(setTempFrequency());
 		// let tmpFrequency = letterFrequency;
 		// make sure they've entered in a full word
@@ -38,43 +38,51 @@ const EnterButton = (props: Props) => {
 		}
 
 		let gameStatus = GameStatus.win;
-		let index = 0;
 
 		// parse each letter
-		currentGuess.letters.forEach((currentLetter: LetterState) => {
-			let state = LetterStates.open;
+		tempGuess.letters.forEach((currentLetter: LetterState, index) => {
 			if (currentLetter.letter.toLowerCase() === winningWord.charAt(index)) {
 				// direct match?
-				state = LetterStates.correct;
-				// dispatch(reduceLetterFrequency(currentLetter.letter));
+				//state = LetterStates.correct;
+				//dispatch(reduceLetterFrequency(currentLetter.letter));
 				tempFrequency[currentLetter.letter] -= 1;
-
+				currentLetter.state = LetterStates.correct;
 			} else {
-				// does the letter exist in the guess?
-				if (tempFrequency[currentLetter.letter] > 0) {
-					// TODO: check if this happened already in the word
-					// if so make sure we have frequency available before marking wrong position
-					state = LetterStates.wrongPosition;
-					tempFrequency[currentLetter.letter] -= 1;
-					// dispatch(reduceTempFrequency(currentLetter.letter));
-				} else {
-					// if not, we are incorrect
-					state = LetterStates.incorrect;
-				}
 				gameStatus = GameStatus.active;
 			}
-
-			dispatch(updateLetterState({ index, state }));
 			index++;
+		});
+
+		tempGuess.letters.forEach((currentLetter: LetterState, index) => {
+			let state = LetterStates.open;
+			// does the letter exist in the guess?
+			if (tempFrequency[currentLetter.letter] > 0) {
+				// TODO: check if this happened already in the word
+				// if so make sure we have frequency available before marking wrong position
+				state = LetterStates.wrongPosition;
+				tempFrequency[currentLetter.letter] -= 1;
+				// dispatch(reduceTempFrequency(currentLetter.letter));
+			} else {
+				// if not, we are incorrect
+				state = LetterStates.incorrect;
+			}
+			currentLetter.state = state;
+			//dispatch(updateLetterState({ index, state }));
+			index++;
+		});
+
+		tempGuess.letters.forEach((currentLetter: LetterState, index) => {
+			const state = currentLetter.state;
+			dispatch(updateLetterState({ index, state }));
+			// TODO: delay for transition animation
+
 		});
 
 		if (gameStatus === GameStatus.win) {
 			dispatch(updateGameState(gameStatus));
-			// TODO: record the win
 		} else {
 			if (currentGuessIndex === guesses.length - 1) {
 				dispatch(updateGameState(GameStatus.lose));
-				// TODO: record the loss
 			} else {
 				dispatch(nextWord());
 			}
@@ -82,18 +90,18 @@ const EnterButton = (props: Props) => {
 	};
 
 	/*
-    if (state.currentGuessWord.length() <= state.wordToGuess.length) state.currentGuessStatus = {status: GuessStatuses.rejected, reason: GuessReasons.tooShort};            
+	if (state.currentGuessWord.length() <= state.wordToGuess.length) state.currentGuessStatus = {status: GuessStatuses.rejected, reason: GuessReasons.tooShort};            
 			else if (!state.validWords.includes(state.currentGuessWord.toString())) state.currentGuessStatus = {status: GuessStatuses.rejected, reason: GuessReasons.notInWordList};
-            else {
-                const statusParse = state.currentGuessWord.updateState(state.wordToGuess);
-                if (statusParse === GameStatus.win) state.gameStatus = GameStatus.win;
-                else {
-                    state.currentGuessIndex++;
-                    // that guess wasn't a winner, do we still have guesses?
-                    if (state.currentGuessIndex === state.noOfGuesses - 1) state.gameStatus = GameStatus.lose;
-                }
-            }      
-    */
+			else {
+				const statusParse = state.currentGuessWord.updateState(state.wordToGuess);
+				if (statusParse === GameStatus.win) state.gameStatus = GameStatus.win;
+				else {
+					state.currentGuessIndex++;
+					// that guess wasn't a winner, do we still have guesses?
+					if (state.currentGuessIndex === state.noOfGuesses - 1) state.gameStatus = GameStatus.lose;
+				}
+			}      
+	*/
 	return (
 		<Button onClick={submitGuess} variant="info" size="lg" className="fs-2 px-4 py-3 flex-fill" disabled={gameState !== GameStatus.active ? true : false}>
 			Enter <i className="bi bi-arrow-return-left"></i>
