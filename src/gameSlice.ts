@@ -244,7 +244,9 @@ const gameSlice = createSlice({
 			state.currentGuessStatus = initialState.currentGuessStatus;
 		},
 		updateLetterState: (state, action: PayloadAction<{ index: number; state: LetterStates }>) => {
+			console.log('guess', state.guesses[state.currentGuessIndex],state.currentGuessIndex)
 			const letterData = state.guesses[state.currentGuessIndex].letters[action.payload.index];
+			console.log('updating',letterData.letter,letterData.state,action.payload.state)
 			letterData.state = action.payload.state;
 			const alphIndex = state.alphabet.findIndex((letter) => letter.letter === letterData.letter);
 			if (state.alphabet[alphIndex].state !== LetterStates.correct) {
@@ -278,6 +280,7 @@ const gameSlice = createSlice({
 			state.gameStatus = action.payload;
 		},
 		nextWord: (state) => {
+			console.log('next word)')
 			state.currentGuessIndex += 1;
 			state.currentGuessLetterIndex = 0;
 		},

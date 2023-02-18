@@ -16,4 +16,12 @@
   font-size: 5rem;
   height: 9rem;
   width: 9rem;
+   transition:transform .3s linear;
+
+   &.bg-success,&.bg-secondary,&.bg-warning{
+    transform: rotateY(180deg);
+    .card-text{
+      transform: rotateY(-180deg);
+    }
+   }
 }

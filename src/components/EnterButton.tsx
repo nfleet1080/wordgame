@@ -75,12 +75,13 @@ const EnterButton = (props: Props) => {
 			}
 		});
 
-		currentGuess.letters.forEach(async (currentLetter: LetterState, index) => {
+		currentGuess.letters.forEach((currentLetter: LetterState, index) => {
 			//await sleep(2000);
-			setTimeout(() => {
+			//setTimeout(() => {
 				const state = newStates[index];
+				console.log('state',LetterStates[state])
 				dispatch(updateLetterState({ index, state }));
-			}, 2000)
+			//}, 2000)
 		});
 
 		if (gameStatus === GameStatus.win) {
