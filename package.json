@@ -25,7 +25,7 @@
   },
   "scripts": {
     "predeploy": "npm run build",
-    "deploy": "gh-pages -b master -r 'https://github.com/nfleet1080/nfleet1080.github.io.git' -d build",
+    "deploy": "gh-pages -r https://github.com/nfleet1080/nfleet1080.github.io.git -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

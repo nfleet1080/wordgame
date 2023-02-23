@@ -10,7 +10,7 @@ const Header = (props: Props) => {
 		<Navbar bg="dark" variant="dark" expand="lg">
 			<Container fluid className="px-4">
 				<Navbar.Brand>
-					<img src="cwscs.png" width="29" height="30" className="d-inline-block align-top me-3" alt="CWSCS logo" />
+					<img src="cwscs.png" width="30" height="30" className="d-inline-block align-top me-3" alt="CWSCS logo" />
 					CWSCS Wordle
 				</Navbar.Brand>
 				<Navbar.Toggle />
