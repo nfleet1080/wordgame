@@ -16,9 +16,7 @@ const LetterDisplay = ({ letterData }: Props) => {
 	return (
 		<Col>
 			<Card className="border-5 fw-bolder d-flex justify-content-center align-items-center text-white" border={border.toLowerCase()} bg={variant.toLowerCase()}>
-				<Card.Text>
-					{letterData.letter}
-				</Card.Text>
+				<Card.Text>{letterData.letter}</Card.Text>
 			</Card>
 		</Col>
 	);

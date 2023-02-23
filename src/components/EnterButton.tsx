@@ -11,7 +11,7 @@ const guessToWord = (guess: WordState) => {
 };
 
 function sleep(ms: number) {
-	return new Promise(resolve => setTimeout(resolve, ms));
+	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 const EnterButton = (props: Props) => {
@@ -57,7 +57,7 @@ const EnterButton = (props: Props) => {
 		});
 
 		currentGuess.letters.forEach((currentLetter: LetterState, index) => {
-			if (newStates[index] != LetterStates.correct) {
+			if (newStates[index] !== LetterStates.correct) {
 				let state = LetterStates.open;
 				// does the letter exist in the guess?
 				if (tempFrequency[currentLetter.letter] > 0) {
@@ -78,9 +78,8 @@ const EnterButton = (props: Props) => {
 		currentGuess.letters.forEach((currentLetter: LetterState, index) => {
 			//await sleep(2000);
 			//setTimeout(() => {
-				const state = newStates[index];
-				console.log('state',LetterStates[state])
-				dispatch(updateLetterState({ index, state }));
+			const state = newStates[index];
+			dispatch(updateLetterState({ index, state }));
 			//}, 2000)
 		});
 
@@ -95,19 +94,6 @@ const EnterButton = (props: Props) => {
 		}
 	};
 
-	/*
-	if (state.currentGuessWord.length() <= state.wordToGuess.length) state.currentGuessStatus = {status: GuessStatuses.rejected, reason: GuessReasons.tooShort};            
-			else if (!state.validWords.includes(state.currentGuessWord.toString())) state.currentGuessStatus = {status: GuessStatuses.rejected, reason: GuessReasons.notInWordList};
-			else {
-				const statusParse = state.currentGuessWord.updateState(state.wordToGuess);
-				if (statusParse === GameStatus.win) state.gameStatus = GameStatus.win;
-				else {
-					state.currentGuessIndex++;
-					// that guess wasn't a winner, do we still have guesses?
-					if (state.currentGuessIndex === state.noOfGuesses - 1) state.gameStatus = GameStatus.lose;
-				}
-			}      
-	*/
 	return (
 		<Button onClick={submitGuess} variant="info" size="lg" className="fs-2 px-4 py-3 flex-fill" disabled={gameState !== GameStatus.active ? true : false}>
 			Enter <i className="bi bi-arrow-return-left"></i>

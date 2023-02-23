@@ -2,18 +2,20 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 export const fetchValidWords = createAsyncThunk('validWords', async (word, { rejectWithValue }) => {
-	const response = await fetch('../validWordList.txt');
+	const response = await fetch('validWordList.txt', {mode: 'no-cors'});
 	const data = response.text();
-	if (response.status < 200 || response.status >= 300) {
+
+	if ((response.status < 200 || response.status >= 300) && response.status !== 0) {
 		return rejectWithValue(data);
 	}
 	return data;
 });
 
 export const fetchWinningWords = createAsyncThunk('winningWords', async (word, { rejectWithValue }) => {
-	const response = await fetch('../winningWordList.txt');
+	const response = await fetch('winningWordList.txt', {mode: 'no-cors'});
 	const data = response.text();
-	if (response.status < 200 || response.status >= 300) {
+
+	if ((response.status < 200 || response.status >= 300) && response.status !== 0) {
 		return rejectWithValue(data);
 	}
 	return data;
@@ -207,8 +209,6 @@ const gameSlice = createSlice({
 	initialState,
 	reducers: {
 		newGame: (state) => {
-			console.log('start new game', state.winningWords.length);
-
 			// increment wins/losses
 			if (state.gameStatus === GameStatus.win) state.wins++;
 			if (state.gameStatus === GameStatus.lose) state.losses++;
@@ -244,9 +244,7 @@ const gameSlice = createSlice({
 			state.currentGuessStatus = initialState.currentGuessStatus;
 		},
 		updateLetterState: (state, action: PayloadAction<{ index: number; state: LetterStates }>) => {
-			console.log('guess', state.guesses[state.currentGuessIndex],state.currentGuessIndex)
 			const letterData = state.guesses[state.currentGuessIndex].letters[action.payload.index];
-			console.log('updating',letterData.letter,letterData.state,action.payload.state)
 			letterData.state = action.payload.state;
 			const alphIndex = state.alphabet.findIndex((letter) => letter.letter === letterData.letter);
 			if (state.alphabet[alphIndex].state !== LetterStates.correct) {
@@ -280,7 +278,6 @@ const gameSlice = createSlice({
 			state.gameStatus = action.payload;
 		},
 		nextWord: (state) => {
-			console.log('next word)')
 			state.currentGuessIndex += 1;
 			state.currentGuessLetterIndex = 0;
 		},
@@ -291,7 +288,6 @@ const gameSlice = createSlice({
 			state.gameStatus = GameStatus.loading;
 		});
 		builder.addCase(fetchValidWords.fulfilled, (state, action) => {
-			console.log('got word list');
 			const wordArray = action.payload.split(/\r?\n/);
 			state.validWords = wordArray;
 			state.validWordsStatus = wordListStatus.ready;
@@ -300,6 +296,7 @@ const gameSlice = createSlice({
 		builder.addCase(fetchValidWords.rejected, (state, action) => {
 			state.validWordsStatus = wordListStatus.error;
 			state.gameStatus = GameStatus.error;
+			console.info(action)
 		});
 
 		builder.addCase(fetchWinningWords.pending, (state, action) => {
@@ -307,7 +304,6 @@ const gameSlice = createSlice({
 			state.gameStatus = GameStatus.loading;
 		});
 		builder.addCase(fetchWinningWords.fulfilled, (state, action) => {
-			console.log('got answer key');
 			const wordArray = action.payload.split(/\r?\n/);
 			state.winningWords = wordArray;
 			state.winningWordsStatus = wordListStatus.ready;
@@ -316,6 +312,7 @@ const gameSlice = createSlice({
 		builder.addCase(fetchWinningWords.rejected, (state, action) => {
 			state.winningWordsStatus = wordListStatus.error;
 			state.gameStatus = GameStatus.error;
+			console.info(action)
 		});
 	},
 });
